@@ -1,0 +1,74 @@
+run:
+  timeout: 5m
+  issues-exit-code: 1
+  tests: true
+  modules-download-mode: readonly
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters:
+  enable:
+    - gofmt
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - gosimple
+    - structcheck
+    - varcheck
+    - ineffassign
+    - deadcode
+    - typecheck
+    - gosec
+    - gocyclo
+    - goconst
+    - misspell
+    - unparam
+    - prealloc
+    - exportloopref
+
+linters-settings:
+  gofmt:
+    simplify: true
+  
+  gocyclo:
+    min-complexity: 15
+  
+  goconst:
+    min-len: 3
+    min-occurrences: 3
+  
+  misspell:
+    locale: US
+  
+  errcheck:
+    check-type-assertions: true
+    check-blank: false
+  
+  govet:
+    check-shadowing: true
+    settings:
+      printf:
+        funcs:
+          - (github.com/sirupsen/logrus.FieldLogger).Infof
+          - (github.com/sirupsen/logrus.FieldLogger).Warnf
+          - (github.com/sirupsen/logrus.FieldLogger).Errorf
+          - (github.com/sirupsen/logrus.FieldLogger).Fatalf
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - gocyclo
+        - errcheck
+        - gosec
+    - path: cmd/
+      linters:
+        - gocyclo
+  
+  max-issues-per-linter: 0
+  max-same-issues: 0
+

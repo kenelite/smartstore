@@ -1,0 +1,59 @@
+env: prod
+
+http:
+  addr: ":8080"
+
+redis:
+  addr: "localhost:6379"
+  db: 0
+  dial_timeout: 2s
+  read_timeout: 1s
+  write_timeout: 1s
+
+db:
+  driver: "pgx"
+  dsn: "postgres://user:password@localhost:5432/smartstore?sslmode=disable"
+
+object_storage:
+  default_storage_class: "HOT"
+  providers:
+    - name: "aws-main"
+      type: "AWS_S3"
+      region: "ap-southeast-1"
+      endpoint: "s3.ap-southeast-1.amazonaws.com"
+      access_key: "YOUR_AWS_ACCESS_KEY"
+      secret_key: "YOUR_AWS_SECRET_KEY"
+      use_ssl: true
+    - name: "r2-logs"
+      type: "CF_R2"
+      region: "auto"
+      endpoint: "YOUR_R2_ACCOUNT_ID.r2.cloudflarestorage.com"
+      access_key: "YOUR_R2_ACCESS_KEY"
+      secret_key: "YOUR_R2_SECRET_KEY"
+      use_ssl: true
+    - name: "gcs-eu"
+      type: "GCP_GCS"
+      project: "your-gcp-project-id"
+      # GCS credentials are loaded via GOOGLE_APPLICATION_CREDENTIALS env
+
+  routes:
+    - env: "prod"
+      logical_region: "ap-sg"
+      bucket: "avatar"
+      storage_class: "HOT"
+      provider_name: "aws-main"
+      provider_bucket: "prod-avatar-sg"
+
+    - env: "prod"
+      logical_region: "ap-sg"
+      bucket: "logs"
+      storage_class: "COLD"
+      provider_name: "r2-logs"
+      provider_bucket: "prod-logs-r2"
+
+    - env: "prod"
+      logical_region: "eu"
+      bucket: "avatar"
+      storage_class: "HOT"
+      provider_name: "gcs-eu"
+      provider_bucket: "prod-avatar-eu"

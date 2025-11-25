@@ -87,7 +87,7 @@ build-linux: ## Build for Linux
 	@echo "$(BLUE)Building for Linux...$(NC)"
 	@mkdir -p $(BINARY_DIR)
 	@GOOS=linux GOARCH=amd64 $(GO) build $(LDFLAGS) -o $(BINARY)-linux-amd64 $(CMD_DIR)
-	@echo "$(GREEN)✓ Linux binary created$(NC)"
+	@echo "$(GREEN)✓ Linux amd64 binary created$(NC)"
 
 build-darwin: ## Build for macOS
 	@echo "$(BLUE)Building for macOS...$(NC)"
@@ -96,7 +96,27 @@ build-darwin: ## Build for macOS
 	@GOOS=darwin GOARCH=arm64 $(GO) build $(LDFLAGS) -o $(BINARY)-darwin-arm64 $(CMD_DIR)
 	@echo "$(GREEN)✓ macOS binaries created$(NC)"
 
-build-all: build-linux build-darwin ## Build for all platforms
+build-windows: ## Build for Windows
+	@echo "$(BLUE)Building for Windows...$(NC)"
+	@mkdir -p $(BINARY_DIR)
+	@GOOS=windows GOARCH=amd64 $(GO) build $(LDFLAGS) -o $(BINARY)-windows-amd64.exe $(CMD_DIR)
+	@echo "$(GREEN)✓ Windows binary created$(NC)"
+
+build-all: ## Build for all platforms (Linux, macOS, Windows)
+	@echo "$(BLUE)Building for all platforms...$(NC)"
+	@mkdir -p $(BINARY_DIR)
+	@echo "$(YELLOW)Building Linux amd64...$(NC)"
+	@GOOS=linux GOARCH=amd64 $(GO) build $(LDFLAGS) -o $(BINARY)-linux-amd64 $(CMD_DIR)
+	@echo "$(YELLOW)Building macOS amd64...$(NC)"
+	@GOOS=darwin GOARCH=amd64 $(GO) build $(LDFLAGS) -o $(BINARY)-darwin-amd64 $(CMD_DIR)
+	@echo "$(YELLOW)Building macOS arm64...$(NC)"
+	@GOOS=darwin GOARCH=arm64 $(GO) build $(LDFLAGS) -o $(BINARY)-darwin-arm64 $(CMD_DIR)
+	@echo "$(YELLOW)Building Windows amd64...$(NC)"
+	@GOOS=windows GOARCH=amd64 $(GO) build $(LDFLAGS) -o $(BINARY)-windows-amd64.exe $(CMD_DIR)
+	@echo ""
+	@echo "$(GREEN)✓ All platform binaries created successfully!$(NC)"
+	@echo "$(BLUE)Built binaries:$(NC)"
+	@ls -lh $(BINARY_DIR)/$(APP_NAME)-* | awk '{printf "  - %-45s %8s\n", $$9, $$5}'
 
 install: build ## Install the binary to $GOPATH/bin
 	@echo "$(BLUE)Installing $(APP_NAME)...$(NC)"
